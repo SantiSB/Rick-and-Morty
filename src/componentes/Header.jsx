@@ -10,7 +10,7 @@ const Header = () => {
   }
   return (
     <div className="Header">
-      Utilizamos la variable color
+      {/* Utilizamos la variable color */}
       <h1 style={{color}}>React Hooks</h1>
       <button type="button" onClick={handleClick}>{darkMode ? 'DarkMode' : 'Light Mode'}</button>
     </div>

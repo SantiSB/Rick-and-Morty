@@ -1,5 +1,5 @@
 //Importamos los Hooks
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer, useMemo } from "react";
 
 //Estado inicial
 const initialState = {
@@ -11,10 +11,10 @@ const favoriteReducer = (state, action) => {
   //Switch
   switch (action.type) {
     //Caso 1
-    case 'ADD_TO_FAVORITE':
+    case "ADD_TO_FAVORITE":
       return {
         ...state,
-        favorites: [...state.favorites, action.payload]
+        favorites: [...state.favorites, action.payload],
       };
     //Caso por default
     default:
@@ -23,7 +23,7 @@ const favoriteReducer = (state, action) => {
 };
 const Characters = () => {
   const [characters, setCharacters] = useState([]);
-
+  const [search, setSearch] = useState("");
   //useReducer para la variable Favorites, Parametros: (Reducer, Estado Inicial)
   const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
 
@@ -41,17 +41,40 @@ const Characters = () => {
     dispatch({ type: "ADD_TO_FAVORITE", payload: favorite });
   };
 
+  //Cambia el useState de search cuando un usuario escribe en el input
+  const handleSearch = (event) => {
+    setSearch(event.target.value);
+  };
+
+  //Función que filtra los charecters que tienen un nombre que coinicide con la busqueda en el Input (Sin importar mayusculas o minusculas)
+  // const filteredUsers = characters.filter((user) => {
+  //   return user.name.toLowerCase().includes(search.toLowerCase());
+  // })
+
+  // Función con useMemo que filtra los charecters que tienen un nombre que coinicide con la busqueda en el Input (Sin importar mayusculas o minusculas)
+  const filteredUsers = useMemo(
+    () =>
+      characters.filter((user) => {
+        return user.name.toLowerCase().includes(search.toLowerCase());
+      }),
+    //Parámetro que va a escuchar los Characters y Search
+    [characters, search]
+  );
+
   return (
     <div className="Characters">
       {/* Haga un mapeo de la variable favorites de InitialState */}
-      {favorites.favorites.map(favorite => (
-        <li key={favorite.id}>
-          {favorite.name}
-        </li>
+      {favorites.favorites.map((favorite) => (
+        <li key={favorite.id}>{favorite.name}</li>
       ))}
 
-        {/* Haga un mapeo de la variable characters de useState */}
-      {characters.map((character) => (
+      {/* Input de busqueda */}
+      <div className="search">
+        <input type={"text"} value={search} onChange={handleSearch} />
+      </div>
+
+      {/* Haga un mapeo de la variable filteredUsers de la función que filtra los resultados de busqueda */}
+      {filteredUsers.map((character) => (
         //Renderizamos un item con un ID diferente
         <div className="item" key={character.id}>
           <h2>{character.name}</h2>
