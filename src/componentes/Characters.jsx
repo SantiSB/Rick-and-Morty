@@ -1,5 +1,13 @@
 //Importamos los Hooks
-import React, { useState, useEffect, useReducer, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
+import Search from "./Search";
 
 //Estado inicial
 const initialState = {
@@ -45,9 +53,14 @@ const Characters = () => {
 
   //Cambia el useState de search cuando un usuario escribe en el input
   //Utilizamos searchInput que es la Referencia creada con useRef, asi no necesitamos recibir un evento como parametro
-  const handleSearch = () => {
-    setSearch(searchInput.current.value);
-  };
+  // const handleSearch = () => {
+  //   setSearch(searchInput.current.value);
+  // };
+
+  //La misma función anterior pero con useCallback
+  const handleSearch = useCallback(()=>{
+    setSearch(searchInput.current.value)
+  }, [])
 
   //Función que filtra los charecters que tienen un nombre que coinicide con la busqueda en el Input (Sin importar mayusculas o minusculas)
   // const filteredUsers = characters.filter((user) => {
@@ -71,10 +84,12 @@ const Characters = () => {
         <li key={favorite.id}>{favorite.name}</li>
       ))}
 
-      {/* Input de busqueda */}
-      <div className="search">
-        <input type={"text"} value={search} ref={searchInput} onChange={handleSearch} />
-      </div>
+      {/* Pasamos al componente search los parametros que requiere */}
+      <Search
+        search={search}
+        searchInput={searchInput}
+        handleSearch={handleSearch}
+      />
 
       {/* Haga un mapeo de la variable filteredUsers de la función que filtra los resultados de busqueda */}
       {filteredUsers.map((character) => (
@@ -82,7 +97,6 @@ const Characters = () => {
         <div className="item" key={character.id}>
           <h2>{character.name}</h2>
           {/* Boton que invoca la función que agrega a favoritos (Le envía un Character) */}
-          {/* Agregamos la referencia de useRef */}
           <button type="button" onClick={() => handleClick(character)}>
             Agregar a Favoritos
           </button>
