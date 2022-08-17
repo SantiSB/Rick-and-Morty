@@ -1,18 +1,21 @@
 //Importamos los Hooks
 import React, {
   useState,
-  useEffect,
   useReducer,
   useMemo,
   useRef,
   useCallback,
 } from "react";
 import Search from "./Search";
+//Importamos el custom Hook useCharacters
+import useCharacters from "../hooks/useCharacters";
 
 //Estado inicial
 const initialState = {
   favorites: [],
 };
+
+const API = 'https://rickandmortyapi.com/api/character'
 
 //Reducer
 const favoriteReducer = (state, action) => {
@@ -30,21 +33,13 @@ const favoriteReducer = (state, action) => {
   }
 };
 const Characters = () => {
-  const [characters, setCharacters] = useState([]);
   const [search, setSearch] = useState("");
   //useReducer para la variable Favorites, Parametros: (Reducer, Estado Inicial)
   const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
   //Creamos una referencia con useRef
   const searchInput = useRef(null);
-
-  useEffect(() => {
-    //Petición fetch
-    fetch("https://rickandmortyapi.com/api/character")
-      //Entonces la respuesta conviertala a json
-      .then((response) => response.json())
-      //Entonces esos los resultados de esos datos envielos a la variable del estado characters
-      .then((data) => setCharacters(data.results));
-  }, []);
+  //Creamos la constante characters llamando al custom Hook useCharacters
+  const characters = useCharacters(API)
 
   const handleClick = (favorite) => {
     //Llama al dispactch, le entrega el tipo de acción a realizar y el payload con la información a actualizar
