@@ -1,5 +1,5 @@
 //Importamos los Hooks
-import React, { useState, useEffect, useReducer, useMemo } from "react";
+import React, { useState, useEffect, useReducer, useMemo, useRef } from "react";
 
 //Estado inicial
 const initialState = {
@@ -26,6 +26,8 @@ const Characters = () => {
   const [search, setSearch] = useState("");
   //useReducer para la variable Favorites, Parametros: (Reducer, Estado Inicial)
   const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
+  //Creamos una referencia con useRef
+  const searchInput = useRef(null);
 
   useEffect(() => {
     //Petición fetch
@@ -42,8 +44,9 @@ const Characters = () => {
   };
 
   //Cambia el useState de search cuando un usuario escribe en el input
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
+  //Utilizamos searchInput que es la Referencia creada con useRef, asi no necesitamos recibir un evento como parametro
+  const handleSearch = () => {
+    setSearch(searchInput.current.value);
   };
 
   //Función que filtra los charecters que tienen un nombre que coinicide con la busqueda en el Input (Sin importar mayusculas o minusculas)
@@ -70,7 +73,7 @@ const Characters = () => {
 
       {/* Input de busqueda */}
       <div className="search">
-        <input type={"text"} value={search} onChange={handleSearch} />
+        <input type={"text"} value={search} ref={searchInput} onChange={handleSearch} />
       </div>
 
       {/* Haga un mapeo de la variable filteredUsers de la función que filtra los resultados de busqueda */}
@@ -79,6 +82,7 @@ const Characters = () => {
         <div className="item" key={character.id}>
           <h2>{character.name}</h2>
           {/* Boton que invoca la función que agrega a favoritos (Le envía un Character) */}
+          {/* Agregamos la referencia de useRef */}
           <button type="button" onClick={() => handleClick(character)}>
             Agregar a Favoritos
           </button>
